@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Data
 public class BaseRequest {
-    @JsonProperty("userName")
+    @JsonProperty("username")
     private String userName;
 
     @JsonProperty("password")
