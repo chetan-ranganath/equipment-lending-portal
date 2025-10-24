@@ -42,6 +42,7 @@ public class UserController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/login")
     ResponseEntity<?> userLogin(@RequestHeader(name = "APIGW-Tracking-header", required = true) String trackingHeader,
                                 @RequestBody BaseRequest request) {
@@ -50,7 +51,8 @@ public class UserController {
         List<BaseResponse> validationErrors = validator.validateRequest(request, true);
 
         if (!validationErrors.isEmpty()) {
-            return ResponseEntity.badRequest().body(validationErrors);
+            // just return the first error in current impl
+            return ResponseEntity.badRequest().body(validationErrors.get(0));
         }
         BaseResponse response = userService.loginUser(request);
 
