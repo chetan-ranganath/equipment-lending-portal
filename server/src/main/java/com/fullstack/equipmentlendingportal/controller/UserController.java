@@ -20,10 +20,10 @@ public class UserController {
     @Autowired
     RequestValidator validator;
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/register")
     ResponseEntity<?> registerUser(@RequestHeader(name = "APIGW-Tracking-header", required = true) String trackingHeader,
                                    @RequestBody BaseRequest request) {
-
         request.setTrackingHeader(trackingHeader);
 
         List<BaseResponse> validationErrors = validator.validateRequest(request, false);
