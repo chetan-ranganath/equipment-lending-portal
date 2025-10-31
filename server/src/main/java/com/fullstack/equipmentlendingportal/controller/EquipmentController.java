@@ -26,6 +26,7 @@ public class EquipmentController {
     @Autowired
     AppConstants constants;
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping
     public ResponseEntity<?> getEquipments(@RequestParam(required = false) EquipmentCategory category, @RequestParam(required = false) Boolean available) {
         List<Equipment> equipmentList;
@@ -47,6 +48,7 @@ public class EquipmentController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/{equipmentId}")
     public ResponseEntity<?> getEquipmentById(@PathVariable String equipmentId) {
         return equipmentService.findEquipmentById(equipmentId);
