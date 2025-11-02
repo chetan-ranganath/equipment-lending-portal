@@ -1,5 +1,6 @@
 package com.fullstack.equipmentlendingportal.repository;
 
+import com.fullstack.equipmentlendingportal.config.AppConstants;
 import com.fullstack.equipmentlendingportal.entity.User;
 import com.fullstack.equipmentlendingportal.exception.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,13 @@ public class UserRepositoryImpl implements UserRepository{
     @Value("${collection.name.user}")
     String userCollectionName;
 
+    @Autowired
+    AppConstants appConstants;
+
     @Override
     public User findByUsername(String username) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("username").is(username));
+        query.addCriteria(Criteria.where(appConstants.getUserConstants().getUsername()).is(username));
         User user = mongoTemplate.findOne(query, User.class,userCollectionName);
         return user;
     }
@@ -29,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository{
     @Override
     public void registerUser(User user) throws BaseException {
         Query query = new Query();
-        query.addCriteria(Criteria.where("username").is(user.getUsername()));
+        query.addCriteria(Criteria.where(appConstants.getUserConstants().getUsername()).is(user.getUsername()));
         if(!mongoTemplate.exists(query,userCollectionName)) {
             mongoTemplate.save(user, userCollectionName);
         }
