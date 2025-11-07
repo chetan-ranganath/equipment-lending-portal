@@ -17,4 +17,8 @@ public interface EquipmentService {
 
     List<Equipment> findByCategoryAndAvailability(EquipmentCategory category, boolean available);
 
+    Equipment addEquipment(Equipment equipment);
+
+	Equipment updateEquipment(String id, Equipment equipment);
+
 }
