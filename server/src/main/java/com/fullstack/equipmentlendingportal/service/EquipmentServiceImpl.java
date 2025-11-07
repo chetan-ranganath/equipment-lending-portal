@@ -54,5 +54,37 @@ public class EquipmentServiceImpl implements EquipmentService{
         return equipmentRepository.findByCategoryAndAvailability(category,isAvailable);
     }
 
+     private String generateUniqueRandomId() {
+        String id;
+        do {
+            int number = 1000 + RANDOM.nextInt(9000);
+            id = String.valueOf(number);
+        } while (equipmentRepository.existsById(id)); // ensures no duplicate
+        return id;
+    }
+    
+    @Override
+    public Equipment addEquipment(Equipment equipment)
+	{
+		equipment.setEquipmentId(generateUniqueRandomId());
+		return equipmentRepository.save(equipment);
+	}
+	
+    @Override
+	public Equipment updateEquipment(String id, Equipment equipment)
+	{
+		return equipmentRepository.findByEquipmentId(id)
+				.map(eq->
+				{
+					eq.setName(equipment.getName());
+					eq.setCategory(equipment.getCategory());
+					eq.setCondition(equipment.getCondition());
+					eq.setAvailableQuantity(equipment.getAvailableQuantity());
+                    return repo.save(eq);
+				})
+				.orElse(null);
+						
+	}
+
 
 }
