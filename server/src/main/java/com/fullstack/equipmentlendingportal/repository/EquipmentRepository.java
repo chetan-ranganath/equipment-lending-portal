@@ -17,5 +17,7 @@ public interface EquipmentRepository {
 
     List<Equipment> findByCategoryAndAvailability(EquipmentCategory category, boolean available);
 
+    Equipment findByEquipmentId(String id);
+
 
 }
