@@ -68,4 +68,54 @@ public class EquipmentController {
         }
     }
 
+        @GetMapping
+	public List<Equipment> getAllEquipment()
+	{
+		return repo.findAll();
+	}
+    
+    @PostMapping
+	public ResponseEntity<Equipment> addEquipment(@RequestBody Equipment equip)
+	{
+		 Equipment savedEquipment = equipmentService.addEquipment(equip);
+	     equip.markNew();
+		 return ResponseEntity.status(HttpStatus.CREATED).body(savedEquipment);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Equipment> updateEquipment(@PathVariable String id, @RequestBody Equipment equip)
+	{
+
+		Equipment existing = repo.findByEquipmentId(id).orElseThrow(() -> new RuntimeException("Equipment not found"));
+		
+		for(Field field: Equipment.class.getDeclaredFields())
+		{
+			field.setAccessible(true);
+			try
+			{
+				Object newValue = field.get(equip);
+				
+				if(newValue!=null)
+				{
+					field.set(existing, newValue);
+				}
+			}
+			catch (IllegalAccessException e) {
+	            e.printStackTrace();
+		}
+		}
+		
+		Equipment updated = repo.save(existing);
+
+	    return ResponseEntity.ok(updated);
+		
+		
+	}
+	
+	// DELETE equipment
+    @DeleteMapping("/{id}")
+    public void deleteEquipment(@PathVariable String id) {
+        repo.deleteByEquipmentId(id);
+    }
+
 }
