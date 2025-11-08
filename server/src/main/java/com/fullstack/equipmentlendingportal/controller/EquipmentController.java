@@ -54,6 +54,7 @@ public class EquipmentController {
         return equipmentService.findEquipmentById(equipmentId);
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/categories")
     public ResponseEntity<?> getCategories() {
         try {

@@ -42,16 +42,13 @@ function LoginForm() {
         message: `Welcome back, ${username}! Redirecting to your dashboard...`,
       });
 
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
+      setTimeout(() => navigate("/dashboard"), 2000);
     } catch (error: any) {
       console.error("Login failed:", error);
       setModalInfo({
         type: "error",
         message: error.message || "Login failed. Please try again.",
       });
-
       setTimeout(() => setModalInfo({ type: null, message: "" }), 2500);
     } finally {
       setLoading(false);
@@ -61,62 +58,67 @@ function LoginForm() {
   return (
     <>
       <div className="login-page">
-        <h1>Welcome Back!</h1>
+        <div className="login-card shadow-lg">
+          <h1 className="portal-title mb-1">TechVerse College</h1>
+          <p className="portal-subtitle mb-4 text-muted">Equipment Portal</p>
+          <h3 className="welcome-title mb-4">Welcome Back 👋</h3>
 
-        <form className="login-form" onSubmit={handleLogin}>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
+          <form className="login-form" onSubmit={handleLogin}>
+            <div className="form-group mb-3">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
 
-          <div className="button-row">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span
-                    className="spinner-border spinner-border-sm me-2"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  Logging in...
-                </>
-              ) : (
-                "Login"
-              )}
-            </button>
+            <div className="form-group mb-4">
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
 
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate("/register")}
-              disabled={loading}
-            >
-              Register
-            </button>
-          </div>
-        </form>
+            <div className="button-row">
+              <button
+                type="submit"
+                className="btn btn-login"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-register"
+                onClick={() => navigate("/register")}
+                disabled={loading}
+              >
+                Register
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
       {modalInfo.type && (
@@ -153,10 +155,10 @@ function LoginForm() {
 }
 
 function generateAlphanumeric(length: number): string {
-  const characters =
+  const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   return Array.from({ length }, () =>
-    characters.charAt(Math.floor(Math.random() * characters.length))
+    chars.charAt(Math.floor(Math.random() * chars.length))
   ).join("");
 }
 

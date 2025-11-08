@@ -1,4 +1,4 @@
-package com.fullstack.equipmentlendingportal.aspect;
+package com.fullstack.equipmentlendingportal.config;
 
 import com.fullstack.equipmentlendingportal.entity.BaseResponse;
 import com.mongodb.MongoWriteException;
