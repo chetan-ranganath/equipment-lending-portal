@@ -1,0 +1,69 @@
+/* Navbar.css */
+
+/* === Base Theme Variables === */
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --primary: #2563eb;
+    --border-color: #e5e7eb;
+    --accent: #2563eb;
+}
+
+/* === Dark Mode Variables === */
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --primary: #3b82f6;
+    --border-color: #334155;
+    --accent: #3b82f6;
+}
+
+/* === General Styles === */
+body {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.navbar {
+    background-color: var(--card-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+/* === Theme Toggle === */
+.theme-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.3rem;
+    cursor: pointer;
+    margin-left: 1rem;
+    transition: color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--primary);
+}
