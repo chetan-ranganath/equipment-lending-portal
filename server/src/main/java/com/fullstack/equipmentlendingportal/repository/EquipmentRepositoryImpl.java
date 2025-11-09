@@ -5,9 +5,11 @@ import com.fullstack.equipmentlendingportal.entity.Equipment;
 import com.fullstack.equipmentlendingportal.entity.EquipmentCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -56,5 +58,23 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
     public List<Equipment> findByCategoryAndAvailability(EquipmentCategory category, boolean available) {
         Query query = new Query(Criteria.where(appConstants.getEquipmentConstants().getCategory()).is(category).and(appConstants.getEquipmentConstants().getIsAvailable()).is(available));
         return mongoTemplate.find(query, Equipment.class);
+    }
+
+    @Override
+    public Equipment updateEquipmentQuantity(String equipmentId, int newAvailableQuantity) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("equipmentId").is(equipmentId));
+
+        Update update = new Update();
+        update.set("availableQuantity", newAvailableQuantity);
+
+        // Returns the updated document
+        return mongoTemplate.findAndModify(
+                query,
+                update,
+                FindAndModifyOptions.options().returnNew(true),
+                Equipment.class,
+                equipmentCollectionName
+        );
     }
 }

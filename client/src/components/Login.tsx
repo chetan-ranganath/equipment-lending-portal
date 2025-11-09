@@ -36,6 +36,7 @@ function LoginForm() {
 
       const data: { token: string } = await response.json();
       localStorage.setItem("jwtToken", data.token);
+      localStorage.setItem("username", username);
 
       setModalInfo({
         type: "success",

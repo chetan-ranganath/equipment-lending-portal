@@ -21,15 +21,19 @@ public class JwtUtil {
 
 
     public String generateJwtToken(String role, String userName) {
-        return Jwts.builder()
+        if (role == null) {
+            throw new IllegalArgumentException("Role cannot be null when generating JWT");
+        }
+
+        String token = Jwts.builder()
                 .subject(userName)
                 .claim("role", role)
                 .claim("userName", userName)
                 .issuedAt(new Date())
-                .expiration((new Date(System.currentTimeMillis() + 1000 * 60 * 60)))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSigningKey())
                 .compact();
-
+        return token;
     }
 
     private Key getSigningKey() {

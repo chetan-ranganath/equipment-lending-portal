@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService{
                 if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                     return new BaseResponse("200",
                             "Login Successful",
-                            jwtUtil.generateJwtToken(request.getRole(), request.getUserName()));
+                            jwtUtil.generateJwtToken(user.getRole(), request.getUserName()));
                 } else {
                     return new BaseResponse("401", "Invalid password",null);
                 }

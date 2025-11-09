@@ -2,19 +2,29 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../styles/Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "./CartContext";
+import { jwtDecode } from "jwt-decode";
 
 function NavBar() {
   const { cart, clearCart } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Remove JWT token
     localStorage.removeItem("jwtToken");
-    // Clear cart if needed
     clearCart();
-    // Redirect to login page
     navigate("/login");
   };
+
+  const token = localStorage.getItem("jwtToken");
+  let role: string | null = null;
+
+  if (token) {
+    try {
+      const decoded: any = jwtDecode(token);
+      role = decoded.role;
+    } catch (err) {
+      console.error("Failed to decode JWT:", err);
+    }
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
@@ -40,15 +50,25 @@ function NavBar() {
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <Link to="/requests" className="nav-link">
                 Requests
-              </a>
+              </Link>
             </li>
+
             <li className="nav-item">
-              <a className="nav-link" href="#">
-                Orders
-              </a>
+              <Link to="/return" className="nav-link text-info">
+                Return Equipment
+              </Link>
             </li>
+
+            {/* Show only for admins */}
+            {role && role.toLowerCase() === "admin" && (
+              <li className="nav-item">
+                <Link to="/admin/requests" className="nav-link text-warning">
+                  Approve/Deny Requests
+                </Link>
+              </li>
+            )}
           </ul>
 
           <ul className="navbar-nav ms-auto">

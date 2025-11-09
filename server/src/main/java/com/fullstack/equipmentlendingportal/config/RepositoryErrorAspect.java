@@ -30,7 +30,8 @@ public class RepositoryErrorAspect {
                     null
             );
             return ResponseEntity.badRequest().body(response);
-        } catch (MongoWriteException | MongoWriteConcernException ex) {
+        }
+        catch (MongoWriteException | MongoWriteConcernException ex) {
             log.error("Mongo write error in {}: {}", joinPoint.getSignature(), ex.getMessage());
             BaseResponse response = new BaseResponse(
                     "MONGO_WRITE_ERROR",
@@ -38,7 +39,17 @@ public class RepositoryErrorAspect {
                     null
             );
             return ResponseEntity.internalServerError().body(response);
-        } catch (MongoTimeoutException ex) {
+        }
+        catch (IllegalStateException ex) {
+            log.error("IllegalStateException at {}: {}", joinPoint.getSignature(), ex.getMessage(), ex);
+            BaseResponse response = new BaseResponse(
+                    "400",
+                    ex.getLocalizedMessage(),
+                    null
+            );
+            return ResponseEntity.badRequest().body(response);
+        }
+        catch (MongoTimeoutException ex) {
             log.error("Mongo connection timeout in {}: {}", joinPoint.getSignature(), ex.getMessage());
             BaseResponse response = new BaseResponse(
                     "MONGO_TIMEOUT",
