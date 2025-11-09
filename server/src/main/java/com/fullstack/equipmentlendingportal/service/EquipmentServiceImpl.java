@@ -54,5 +54,51 @@ public class EquipmentServiceImpl implements EquipmentService{
         return equipmentRepository.findByCategoryAndAvailability(category,isAvailable);
     }
 
+    @Override
+    public Equipment addEquipment(Equipment equipment) {
+        if (equipment == null) {
+            throw new IllegalArgumentException("Equipment cannot be null");
+        }
+        return equipmentRepository.saveEquipment(equipment);
+    }
+
+    @Override
+    public Equipment updateEquipment(String equipmentId, Equipment equipment) {
+        if (equipmentId == null || equipmentId.isBlank()) {
+            throw new IllegalArgumentException("Equipment ID cannot be null or empty");
+        }
+
+        Equipment existing = equipmentRepository.findEquipmentById(equipmentId);
+        if (existing == null) {
+            throw new IllegalArgumentException("Equipment not found with ID: " + equipmentId);
+        }
+
+        // Update fields (you can fine-tune this if partial updates are allowed)
+        existing.setName(equipment.getName());
+        existing.setCategory(equipment.getCategory());
+        existing.setDescription(equipment.getDescription());
+        existing.setTotalQuantity(equipment.getTotalQuantity());
+        existing.setAvailableQuantity(equipment.getAvailableQuantity());
+        existing.setCondition(equipment.getCondition());
+        existing.setAvailable(equipment.isAvailable());
+        existing.setImageUrl(equipment.getImageUrl());
+
+        return equipmentRepository.updateEquipment(existing);
+    }
+
+    @Override
+    public void deleteEquipment(String equipmentId) {
+        if (equipmentId == null || equipmentId.isBlank()) {
+            throw new IllegalArgumentException("Equipment ID cannot be null or empty");
+        }
+
+        Equipment existing = equipmentRepository.findEquipmentById(equipmentId);
+        if (existing == null) {
+            throw new IllegalArgumentException("Equipment not found with ID: " + equipmentId);
+        }
+
+        equipmentRepository.deleteEquipmentById(equipmentId);
+    }
+
 
 }

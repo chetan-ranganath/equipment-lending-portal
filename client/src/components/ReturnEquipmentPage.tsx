@@ -26,7 +26,7 @@ export default function ReturnEquipmentPage() {
   const [requests, setRequests] = useState<CartRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [returningIds, setReturningIds] = useState<string[]>([]); // track returns in progress
+  const [returningIds, setReturningIds] = useState<string[]>([]);
 
   const token = localStorage.getItem("jwtToken");
   const username = localStorage.getItem("username");
@@ -46,7 +46,7 @@ export default function ReturnEquipmentPage() {
       if (!response.ok) throw new Error("Failed to fetch requests");
 
       const data = await response.json();
-      // Only approved requests
+
       const approved = data.filter(
         (req: CartRequest) => req.status?.toLowerCase() === "approved"
       );
@@ -71,14 +71,14 @@ export default function ReturnEquipmentPage() {
 
       if (!response.ok) throw new Error("Failed to return equipment");
 
-      // After success, keep ID in returningIds to show "Return pending"
+
       setRequests((prev) =>
         prev.map((req) => (req.id === id ? { ...req } : req))
       );
     } catch (err) {
       console.error(err);
       alert("Failed to return equipment.");
-      // remove from pending on failure
+
       setReturningIds((prev) => prev.filter((rid) => rid !== id));
     }
   };

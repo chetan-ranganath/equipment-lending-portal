@@ -33,7 +33,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart((prevCart) => {
       const existing = prevCart.find((i) => i.equipmentId === item.equipmentId);
       if (existing) {
-        // Limit quantity to availableQuantity
+
         return prevCart.map((i) =>
           i.equipmentId === item.equipmentId && i.quantity < i.availableQuantity
             ? { ...i, quantity: i.quantity + 1 }

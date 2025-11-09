@@ -15,7 +15,7 @@ interface CartRequestItem {
 interface CartRequest {
   id: string;
   username: string;
-  status: string; // PENDING, APPROVED, DENIED, RETURN_REQUESTED, RETURNED
+  status: string;
   purpose: string;
   requestedAt: string;
   returnDate?: string;
@@ -68,7 +68,6 @@ function AdminRequestsPage() {
 
       if (!response.ok) throw new Error(`Failed to ${action} request`);
 
-      // Update local state without refetching everything
       setRequests((prev) =>
         prev.map((req) =>
           req.id === id
@@ -109,7 +108,6 @@ function AdminRequestsPage() {
       </>
     );
 
-  // Filter requests based on active tab
   let filteredRequests: CartRequest[] = [];
   if (activeTab === "pending") {
     filteredRequests = requests.filter(

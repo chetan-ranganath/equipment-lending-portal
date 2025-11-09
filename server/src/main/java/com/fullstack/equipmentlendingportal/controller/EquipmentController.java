@@ -28,7 +28,8 @@ public class EquipmentController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping
-    public ResponseEntity<?> getEquipments(@RequestParam(required = false) EquipmentCategory category, @RequestParam(required = false) Boolean available) {
+    public ResponseEntity<?> getEquipments(@RequestParam(required = false) EquipmentCategory category,
+                                           @RequestParam(required = false) Boolean available) {
         List<Equipment> equipmentList;
         if (category != null && available != null) {
             equipmentList = equipmentService.findByCategoryAndAvailability(category, available);
@@ -40,11 +41,13 @@ public class EquipmentController {
             equipmentList = equipmentService.findAllEquipments();
         }
 
-        if  (equipmentList != null && !equipmentList.isEmpty()){
+        if (equipmentList != null && !equipmentList.isEmpty()) {
             return ResponseEntity.ok(equipmentList);
-        }
-        else {
-            return handleResponse.onError(constants.getErrorCodes().getEquipmentNotFoundCode(),constants.getErrorCodes().getEquipmentNotFoundMessage());
+        } else {
+            return handleResponse.onError(
+                    constants.getErrorCodes().getEquipmentNotFoundCode(),
+                    constants.getErrorCodes().getEquipmentNotFoundMessage()
+            );
         }
     }
 
@@ -59,13 +62,54 @@ public class EquipmentController {
     public ResponseEntity<?> getCategories() {
         try {
             List<String> categories = Stream.of(EquipmentCategory.values()).map(Enum::name).toList();
-
             return ResponseEntity.ok(categories);
-
         } catch (Exception e) {
             BaseResponse error = new BaseResponse("CATEGORY_FETCH_ERROR", "Error fetching categories: " + e.getMessage(), null);
             return ResponseEntity.internalServerError().body(error);
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping
+    public ResponseEntity<?> addEquipment(@RequestBody Equipment equipment) {
+        try {
+            Equipment created = equipmentService.addEquipment(equipment);
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            return handleResponse.onError(
+                    "EQUIPMENT_ADD_ERROR",
+                    "Failed to add equipment: " + e.getMessage()
+            );
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PutMapping("/{equipmentId}")
+    public ResponseEntity<?> updateEquipment(@PathVariable String equipmentId, @RequestBody Equipment equipment) {
+        try {
+            Equipment updated = equipmentService.updateEquipment(equipmentId, equipment);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return handleResponse.onError(
+                    "EQUIPMENT_UPDATE_ERROR",
+                    "Failed to update equipment: " + e.getMessage()
+            );
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @DeleteMapping("/{equipmentId}")
+    public ResponseEntity<?> deleteEquipment(@PathVariable String equipmentId) {
+        try {
+            equipmentService.deleteEquipment(equipmentId);
+            return ResponseEntity.ok(
+                    new BaseResponse("200", "Equipment deleted successfully", null)
+            );
+        } catch (Exception e) {
+            return handleResponse.onError(
+                    "EQUIPMENT_DELETE_ERROR",
+                    "Failed to delete equipment: " + e.getMessage()
+            );
+        }
+    }
 }

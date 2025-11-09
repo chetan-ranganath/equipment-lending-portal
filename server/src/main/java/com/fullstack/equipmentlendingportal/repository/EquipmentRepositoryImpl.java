@@ -77,4 +77,38 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
                 equipmentCollectionName
         );
     }
+
+    @Override
+    public Equipment saveEquipment(Equipment equipment) {
+        return mongoTemplate.save(equipment, equipmentCollectionName);
+    }
+
+    @Override
+    public Equipment updateEquipment(Equipment equipment) {
+        Query query = new Query(Criteria.where("equipmentId").is(equipment.getEquipmentId()));
+
+        Update update = new Update()
+                .set("name", equipment.getName())
+                .set("category", equipment.getCategory())
+                .set("description", equipment.getDescription())
+                .set("totalQuantity", equipment.getTotalQuantity())
+                .set("availableQuantity", equipment.getAvailableQuantity())
+                .set("condition", equipment.getCondition())
+                .set("isAvailable", equipment.isAvailable())
+                .set("imageUrl", equipment.getImageUrl());
+
+        return mongoTemplate.findAndModify(
+                query,
+                update,
+                FindAndModifyOptions.options().returnNew(true),
+                Equipment.class,
+                equipmentCollectionName
+        );
+    }
+
+    @Override
+    public void deleteEquipmentById(String equipmentId) {
+        Query query = new Query(Criteria.where(appConstants.getEquipmentConstants().getEquipmentId()).is(equipmentId));
+        mongoTemplate.remove(query, Equipment.class, equipmentCollectionName);
+    }
 }
