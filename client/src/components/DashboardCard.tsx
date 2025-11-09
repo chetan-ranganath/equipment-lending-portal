@@ -24,16 +24,14 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
 
   const isAvailable = equipment.available && equipment.availableQuantity > 0;
 
-
   const defaultImages: Record<string, string> = {
-    SPORTS: "https://cdn-icons-png.flaticon.com/512/833/833314.png",
+    SPORTS: "https://cdn-icons-png.flaticon.com/128/3915/3915004.png",
     LAB: "https://cdn-icons-png.flaticon.com/512/3063/3063490.png",
     MUSIC: "https://cdn-icons-png.flaticon.com/512/727/727218.png",
     CAMERA: "https://cdn-icons-png.flaticon.com/512/2920/2920264.png",
     ELECTRONICS: "https://cdn-icons-png.flaticon.com/512/2910/2910768.png",
     OTHER: "https://cdn-icons-png.flaticon.com/512/565/565547.png",
   };
-
 
   const getImageUrl = () => {
     if (equipment.imageUrl && equipment.imageUrl.trim() !== "") {
@@ -69,68 +67,87 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
 
   return (
     <div
-      className="card shadow-sm border-0 h-100 rounded-4 overflow-hidden"
+      className={`card shadow-sm rounded-4 overflow-hidden d-flex flex-row align-items-stretch mb-3`}
       style={{
-        transition: "transform 0.2s ease",
+        minHeight: "180px",
+        maxWidth: "550px",
+        margin: "auto",
         backgroundColor: isAvailable ? "white" : "#f8f9fa",
+        transition: "transform 0.2s ease",
       }}
     >
-      <img
-        src={getImageUrl()}
-        className="card-img-top"
-        alt={equipment.name}
-
-        onError={(e) => {
-          const category = equipment.category?.toUpperCase() || "OTHER";
-          (e.target as HTMLImageElement).src =
-            defaultImages[category] || defaultImages["OTHER"];
-        }}
+      {/* Left Image */}
+      <div
+        className="flex-shrink-0"
         style={{
-          height: "200px",
-          objectFit: "cover",
-          borderBottom: "1px solid #eee",
-          backgroundColor: "#f8f9fa",
+          width: "30%",
+          minWidth: "120px",
+          backgroundColor: "#f0f0f0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
         }}
-      />
+      >
+        <img
+          src={getImageUrl()}
+          alt={equipment.name}
+          onError={(e) => {
+            const category = equipment.category?.toUpperCase() || "OTHER";
+            (e.target as HTMLImageElement).src =
+              defaultImages[category] || defaultImages["OTHER"];
+          }}
+          style={{
+            width: "100%",
+            maxHeight: "100%",
+            objectFit: "contain", // makes the image shrink without stretching
+            borderRadius: "0.5rem 0 0 0.5rem",
+            backgroundColor: "#f0f0f0",
+          }}
+        />
+      </div>
 
+      {/* Right Info */}
       <div className="card-body d-flex flex-column justify-content-between p-3">
         <div>
-          <h5 className="card-title fw-bold mb-1">{equipment.name}</h5>
+          <h5 className="fw-bold mb-1">{equipment.name}</h5>
           <p className="text-muted mb-1">{equipment.category}</p>
-          <p className="small text-secondary mb-3">
+          <p className="small text-secondary mb-2">
             {equipment.description.length > 80
               ? equipment.description.slice(0, 80) + "..."
               : equipment.description}
           </p>
+
+          <div className="mb-2">
+            <small className="text-muted me-3">
+              Total: {equipment.totalQuantity}
+            </small>
+            <small className="text-success">
+              Available: {equipment.availableQuantity}
+            </small>
+          </div>
         </div>
 
-        <div className="text-center">
-          {/* Quantity selector */}
+        {/* Quantity + Add Button */}
+        <div className="d-flex flex-column align-items-center">
           <div className="d-flex justify-content-center align-items-center mb-2">
             <button
               className="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center"
-              style={{ width: "36px", height: "36px" }}
+              style={{ width: "32px", height: "32px" }}
               onClick={decrement}
               disabled={quantity <= 1 || !isAvailable}
             >
               –
             </button>
-
             <span
-              className="fw-bold fs-5 mx-3"
-              style={{
-                minWidth: "40px",
-                textAlign: "center",
-                color: "#222",
-                lineHeight: "1",
-              }}
+              className="fw-bold fs-5 mx-2"
+              style={{ minWidth: "35px", textAlign: "center" }}
             >
               {quantity}
             </span>
-
             <button
               className="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center"
-              style={{ width: "36px", height: "36px" }}
+              style={{ width: "32px", height: "32px" }}
               onClick={increment}
               disabled={quantity >= equipment.availableQuantity || !isAvailable}
             >
@@ -138,11 +155,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
             </button>
           </div>
 
-          {/* Availability info */}
-          <small
-            className="text-muted d-block mb-3"
-            style={{ fontSize: "0.85rem" }}
-          >
+          <small className="text-muted mb-2">
             {isAvailable
               ? `${equipment.availableQuantity} available`
               : "Currently unavailable"}

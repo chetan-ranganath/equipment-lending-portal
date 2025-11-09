@@ -1,4 +1,5 @@
-.register-page {
+/* === Full-page layout === */
+.login-page {
     position: relative;
     display: flex;
     justify-content: center;
@@ -11,8 +12,9 @@
     background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
 }
 
-.register-page::before,
-.register-page::after {
+/* === Floating Blobs === */
+.login-page::before,
+.login-page::after {
     content: "";
     position: absolute;
     border-radius: 50%;
@@ -22,7 +24,7 @@
     animation: floatBlob 25s ease-in-out infinite alternate;
 }
 
-.register-page::before {
+.login-page::before {
     width: 700px;
     height: 700px;
     top: -250px;
@@ -30,7 +32,7 @@
     background: #a5b4fc;
 }
 
-.register-page::after {
+.login-page::after {
     width: 600px;
     height: 600px;
     bottom: -200px;
@@ -52,14 +54,15 @@
     }
 }
 
-.register-form {
+/* === Card === */
+.login-card {
     position: relative;
     z-index: 1;
     background: #ffffff;
     padding: 40px 32px;
     border-radius: 16px;
     width: 100%;
-    max-width: 450px;
+    max-width: 420px;
     text-align: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     display: flex;
@@ -68,11 +71,12 @@
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.register-form:hover {
+.login-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
 }
 
+/* === Titles === */
 .portal-title {
     font-size: 2rem;
     font-weight: 700;
@@ -86,13 +90,7 @@
     margin-top: -4px;
 }
 
-.welcome-title {
-    color: #111827;
-    font-weight: 600;
-    margin-top: 12px;
-    margin-bottom: 16px;
-}
-
+/* === Inputs === */
 .form-control {
     border-radius: 10px;
     border: 1px solid #d1d5db;
@@ -106,13 +104,21 @@
     box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.25);
 }
 
+.text-danger {
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: block;
+    color: #dc2626;
+}
+
+/* === Buttons === */
 .button-row {
     display: flex;
     justify-content: space-between;
     gap: 10px;
 }
 
-.btn-register {
+.btn-login {
     flex: 1;
     background-color: #2563eb;
     color: white;
@@ -122,11 +128,12 @@
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.btn-register:hover {
+.btn-login:hover {
     background-color: #1e40af;
     transform: translateY(-1px);
 }
 
+/* === Modal Animation === */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -144,12 +151,18 @@
     border-radius: 12px;
 }
 
+/* === Responsive === */
 @media (max-width: 600px) {
-    .register-form {
+    .login-card {
         padding: 28px 20px;
     }
 
     .button-row {
         flex-direction: column;
     }
+}
+
+.form-group {
+    margin-bottom: 20px;
+    /* increase spacing between fields */
 }

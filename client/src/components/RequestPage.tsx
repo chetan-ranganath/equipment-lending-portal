@@ -30,7 +30,7 @@ interface CartRequest {
 
 export default function RequestsPage() {
   const [requests, setRequests] = useState<CartRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -53,10 +53,9 @@ export default function RequestsPage() {
         );
 
         if (response.ok) {
-          const data = await response.json();
+          const data: CartRequest[] = await response.json();
           setRequests(data);
         } else {
-
           setRequests([]);
         }
       } catch (err) {
@@ -70,11 +69,36 @@ export default function RequestsPage() {
     fetchRequests();
   }, []);
 
+  const handleDelete = async (requestId: string) => {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:9086/api/requests/${requestId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        setRequests((prev) => prev.filter((req) => req.id !== requestId));
+      } else {
+        console.error("Failed to delete request");
+      }
+    } catch (err) {
+      console.error("Error deleting request:", err);
+    }
+  };
+
   return (
     <>
       <NavBar />
       <div className="container mt-4 mb-5">
-        <h2 className="fw-bold mb-4 text-center"> My Equipment Requests</h2>
+        <h2 className="fw-bold mb-4 text-center">My Equipment Requests</h2>
 
         {loading ? (
           <p className="text-center text-muted mt-5">Loading requests...</p>
@@ -92,7 +116,7 @@ export default function RequestsPage() {
           </div>
         ) : (
           <div className="row">
-            {requests.map((req) => (
+            {requests.map((req: CartRequest) => (
               <div key={req.id} className="col-md-6 col-lg-4 mb-4">
                 <div className="card shadow-sm border-0 h-100">
                   <div className="card-body d-flex flex-column">
@@ -111,9 +135,9 @@ export default function RequestsPage() {
 
                     <span
                       className={`badge ${
-                        req.status === "APPROVED"
+                        req.status.toUpperCase() === "APPROVED"
                           ? "bg-success"
-                          : req.status === "DENIED"
+                          : req.status.toUpperCase() === "DENIED"
                           ? "bg-danger"
                           : "bg-warning text-dark"
                       } align-self-start mb-3`}
@@ -121,8 +145,18 @@ export default function RequestsPage() {
                       {req.status}
                     </span>
 
+                    {/* Delete button for pending requests */}
+                    {req.status.toUpperCase() === "PENDING" && (
+                      <button
+                        className="btn btn-sm btn-outline-danger mb-3"
+                        onClick={() => handleDelete(req.id)}
+                      >
+                        Delete Request
+                      </button>
+                    )}
+
                     <div className="border-top pt-2 small text-secondary">
-                      {req.items.map((it, idx) => (
+                      {req.items.map((it: CartRequestItem, idx: number) => (
                         <div key={idx} className="mb-2">
                           <strong>{it.equipment.name}</strong> —{" "}
                           {it.requestedQuantity} pcs
