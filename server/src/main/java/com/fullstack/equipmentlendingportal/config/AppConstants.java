@@ -17,7 +17,7 @@ public class AppConstants {
     private UserConstants userConstants;
     private EquipmentConstants equipmentConstants;
     private ErrorCodes errorCodes;
-
+    private CartRequestConstants cartRequestConstants;
     @Getter
     @Setter
     public static class UserConstants{
@@ -40,7 +40,18 @@ public class AppConstants {
         private String equipmentNotFoundCode;
         private String internalServerErrorCode;
         private String internalServerErrorMessage;
+        private String notFoundCode;
+        private String notFoundMessage;
 
+    }
+
+    @Getter
+    @Setter
+    public static class CartRequestConstants {
+
+        private  String id ;
+        private  String userId ;
+        private  String status;
     }
 
 }

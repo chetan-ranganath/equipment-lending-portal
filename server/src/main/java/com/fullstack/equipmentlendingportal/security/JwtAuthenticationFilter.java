@@ -34,7 +34,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.extractClaims(token);
                 String username = claims.getSubject();
                 String role = claims.get("role", String.class);
+                String path = request.getRequestURI();
+                String method = request.getMethod();
+                System.out.println(role + " ++" + path + "++" + method );
+                boolean isAdminOnly = (
+                        path.matches(".*/approve$") ||
+                                path.matches(".*/deny$") ||
+                                (path.equals("/api/requests") && "GET".equalsIgnoreCase(method))
+                );
 
+                if (isAdminOnly && !"ADMIN".equalsIgnoreCase(role)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("Access denied: Admin privileges required.");
+                    return;
+                }
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 new User(username, "", Collections.emptyList()),
