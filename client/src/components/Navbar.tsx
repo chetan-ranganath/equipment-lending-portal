@@ -43,7 +43,8 @@ function NavBar() {
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          {/* Left side navigation */}
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-3">
             <li className="nav-item">
               <Link to="/dashboard" className="nav-link active">
                 Home
@@ -54,26 +55,33 @@ function NavBar() {
                 Requests
               </Link>
             </li>
-
             <li className="nav-item">
               <Link to="/return" className="nav-link text-info">
                 Return Equipment
               </Link>
             </li>
 
-            {/* Show only for admins */}
+            {/* Admin only links */}
             {role && role.toLowerCase() === "admin" && (
-              <li className="nav-item">
-                <Link to="/admin/requests" className="nav-link text-warning">
-                  Approve/Deny Requests
-                </Link>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link to="/admin/requests" className="nav-link text-warning">
+                    Approve/Deny Requests
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/admin/inventory" className="nav-link text-success">
+                    Inventory Management
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
 
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link to="/cart" className="nav-link position-relative">
+          {/* Right side: Cart & Account */}
+          <ul className="navbar-nav ms-auto align-items-center gap-3">
+            <li className="nav-item position-relative">
+              <Link to="/cart" className="nav-link">
                 🛒 Cart
                 {cart.length > 0 && (
                   <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
@@ -83,7 +91,7 @@ function NavBar() {
               </Link>
             </li>
 
-            <li className="nav-item dropdown ms-3">
+            <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle"
                 href="#"

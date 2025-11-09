@@ -8,7 +8,7 @@ function Register() {
   const [password, setPassword] = useState<string>("");
   const [role, setRole] = useState<string>("student");
   const [phone, setPhone] = useState<string>("");
-  //show modal on successful login
+
   const [showModal, setShowModal] = useState<boolean>(false);
 
   const navigate = useNavigate();

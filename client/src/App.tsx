@@ -8,6 +8,7 @@ import AdminRequestsPage from "./components/AdminRequestsPage.tsx";
 import ReturnEquipmentPage from "./components/ReturnEquipmentPage.tsx";
 import { CartProvider } from "./components/CartContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import InventoryManagementPage from "./components/InventoryManagementPage.tsx";
 
 function App() {
   return (
@@ -32,6 +33,10 @@ function App() {
                   <Route
                     path="admin/requests"
                     element={<AdminRequestsPage />}
+                  />
+                  <Route
+                    path="admin/inventory"
+                    element={<InventoryManagementPage />}
                   />
 
                   {/* ✅ Return Equipment for all users */}

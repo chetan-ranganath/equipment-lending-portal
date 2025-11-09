@@ -56,12 +56,12 @@ export default function RequestsPage() {
           const data = await response.json();
           setRequests(data);
         } else {
-          // Non-200 → treat as empty gracefully (no alerts)
+
           setRequests([]);
         }
       } catch (err) {
         console.error("Failed to fetch requests:", err);
-        setRequests([]); // fallback to empty state
+        setRequests([]);
       } finally {
         setLoading(false);
       }
@@ -74,7 +74,7 @@ export default function RequestsPage() {
     <>
       <NavBar />
       <div className="container mt-4 mb-5">
-        <h2 className="fw-bold mb-4 text-center">📦 My Equipment Requests</h2>
+        <h2 className="fw-bold mb-4 text-center"> My Equipment Requests</h2>
 
         {loading ? (
           <p className="text-center text-muted mt-5">Loading requests...</p>

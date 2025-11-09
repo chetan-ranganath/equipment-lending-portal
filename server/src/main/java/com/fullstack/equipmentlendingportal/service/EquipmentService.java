@@ -16,5 +16,9 @@ public interface EquipmentService {
     List<Equipment> findByAvailability(boolean available);
 
     List<Equipment> findByCategoryAndAvailability(EquipmentCategory category, boolean available);
+    Equipment addEquipment(Equipment equipment);
+    Equipment updateEquipment(String equipmentId, Equipment equipment);
+
+    void deleteEquipment(String equipmentId);
 
 }

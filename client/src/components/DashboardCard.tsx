@@ -24,7 +24,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
 
   const isAvailable = equipment.available && equipment.availableQuantity > 0;
 
-  // Default images by category
+
   const defaultImages: Record<string, string> = {
     SPORTS: "https://cdn-icons-png.flaticon.com/512/833/833314.png",
     LAB: "https://cdn-icons-png.flaticon.com/512/3063/3063490.png",
@@ -34,7 +34,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
     OTHER: "https://cdn-icons-png.flaticon.com/512/565/565547.png",
   };
 
-  // Determine the image to use
+
   const getImageUrl = () => {
     if (equipment.imageUrl && equipment.imageUrl.trim() !== "") {
       return equipment.imageUrl;
@@ -79,7 +79,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
         src={getImageUrl()}
         className="card-img-top"
         alt={equipment.name}
-        // fallback if image is broken
+
         onError={(e) => {
           const category = equipment.category?.toUpperCase() || "OTHER";
           (e.target as HTMLImageElement).src =

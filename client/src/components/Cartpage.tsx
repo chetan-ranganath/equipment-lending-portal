@@ -9,9 +9,9 @@ function CartPage() {
     Object.fromEntries(cart.map((item) => [item.equipmentId, item.quantity]))
   );
   const [purpose, setPurpose] = useState("");
-  const [returnDate, setReturnDate] = useState(""); // 📅 new
+  const [returnDate, setReturnDate] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false); // ✅ modal state
+  const [showModal, setShowModal] = useState(false);
 
   const handleQuantityChange = (id: string, value: number, max: number) => {
     if (value < 1) value = 1;
@@ -48,7 +48,7 @@ function CartPage() {
       status: "PENDING",
       purpose,
       requestedAt: new Date().toISOString(),
-      returnDate, // 📅 include selected date
+      returnDate,
       items: cart.map((item) => ({
         equipment: {
           equipmentId: item.equipmentId,
@@ -81,7 +81,7 @@ function CartPage() {
         throw new Error(`Server error ${response.status}: ${text}`);
       }
 
-      // ✅ show modal instead of alert
+
       setShowModal(true);
       clearCart();
       setPurpose("");
@@ -96,7 +96,7 @@ function CartPage() {
 
   const handleModalClose = () => {
     setShowModal(false);
-    window.location.href = "/dashboard"; // redirect after modal close
+    window.location.href = "/dashboard";
   };
 
   return (
