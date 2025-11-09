@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../styles/Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "./CartContext";
+import { jwtDecode } from "jwt-decode";
 
 function NavBar() {
   const { cart, clearCart } = useCart();
@@ -12,6 +13,18 @@ function NavBar() {
     clearCart();
     navigate("/login");
   };
+
+  const token = localStorage.getItem("jwtToken");
+  let role: string | null = null;
+
+  if (token) {
+    try {
+      const decoded: any = jwtDecode(token);
+      role = decoded.role;
+    } catch (err) {
+      console.error("Failed to decode JWT:", err);
+    }
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
@@ -32,7 +45,7 @@ function NavBar() {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link to="/dashboard" className="nav-link">
+              <Link to="/dashboard" className="nav-link active">
                 Home
               </Link>
             </li>
@@ -41,11 +54,15 @@ function NavBar() {
                 Requests
               </Link>
             </li>
-            <li className="nav-item">
-              <Link to="/orders" className="nav-link">
-                Orders
-              </Link>
-            </li>
+
+            {/* Show only for admins */}
+            {role && role.toLowerCase() === "admin" && (
+              <li className="nav-item">
+                <Link to="/admin/requests" className="nav-link text-warning">
+                  Approve/Deny Requests
+                </Link>
+              </li>
+            )}
           </ul>
 
           <ul className="navbar-nav ms-auto">
@@ -75,14 +92,14 @@ function NavBar() {
                 aria-labelledby="userDropdown"
               >
                 <li>
-                  <Link className="dropdown-item" to="/profile">
+                  <a className="dropdown-item" href="#">
                     Profile
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/settings">
+                  <a className="dropdown-item" href="#">
                     Settings
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <hr className="dropdown-divider" />
