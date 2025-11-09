@@ -27,7 +27,7 @@ function AdminRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "pending" | "approved" | "denied" | "return"
+    "pending" | "approved" | "denied" | "return" | "due"
   >("pending");
 
   const token = localStorage.getItem("jwtToken");
@@ -108,6 +108,7 @@ function AdminRequestsPage() {
       </>
     );
 
+  // Filter requests based on active tab
   let filteredRequests: CartRequest[] = [];
   if (activeTab === "pending") {
     filteredRequests = requests.filter(
@@ -138,6 +139,21 @@ function AdminRequestsPage() {
           (statusOrder[b.status.toLowerCase()] ?? 99)
         );
       });
+  } else if (activeTab === "due") {
+    // Due tab: track approved and return_requested
+    filteredRequests = requests
+      .filter(
+        (r) =>
+          r.status?.toLowerCase() === "approved" ||
+          r.status?.toLowerCase() === "return_requested"
+      )
+      .sort((a, b) => {
+        if (!a.returnDate) return 1;
+        if (!b.returnDate) return -1;
+        return (
+          new Date(a.returnDate).getTime() - new Date(b.returnDate).getTime()
+        );
+      });
   }
 
   const statusBadge = (status: string) => {
@@ -155,6 +171,12 @@ function AdminRequestsPage() {
       default:
         return <span className="badge bg-warning text-dark">Pending</span>;
     }
+  };
+
+  const isOverdue = (returnDate?: string) => {
+    if (!returnDate) return false;
+    const now = new Date();
+    return new Date(returnDate) < now;
   };
 
   return (
@@ -199,6 +221,14 @@ function AdminRequestsPage() {
               Return Requests
             </button>
           </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "due" ? "active" : ""}`}
+              onClick={() => setActiveTab("due")}
+            >
+              Due Date
+            </button>
+          </li>
         </ul>
 
         {filteredRequests.length === 0 ? (
@@ -223,8 +253,10 @@ function AdminRequestsPage() {
                   <th>Purpose</th>
                   <th>Status</th>
                   <th>Items</th>
-                  {activeTab === "pending" && <th>Actions</th>}
-                  {activeTab === "return" && <th>Return</th>}
+                  {(activeTab === "pending" ||
+                    activeTab === "return" ||
+                    activeTab === "due") && <th>Actions</th>}
+                  {activeTab === "due" && <th>Return Due Date</th>}
                 </tr>
               </thead>
               <tbody>
@@ -244,34 +276,57 @@ function AdminRequestsPage() {
                         ))}
                       </ul>
                     </td>
-                    {activeTab === "pending" && (
+                    {(activeTab === "pending" ||
+                      activeTab === "return" ||
+                      activeTab === "due") && (
                       <td>
-                        <button
-                          className="btn btn-success btn-sm me-2"
-                          onClick={() => handleAction(req.id, "approve")}
-                        >
-                          ✅ Approve
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleAction(req.id, "deny")}
-                        >
-                          ❌ Deny
-                        </button>
+                        {activeTab === "pending" && (
+                          <>
+                            <button
+                              className="btn btn-success btn-sm me-2"
+                              onClick={() => handleAction(req.id, "approve")}
+                            >
+                              ✅ Approve
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => handleAction(req.id, "deny")}
+                            >
+                              ❌ Deny
+                            </button>
+                          </>
+                        )}
+                        {(activeTab === "return" || activeTab === "due") && (
+                          <>
+                            {req.status.toLowerCase() === "return_requested" ? (
+                              <button
+                                className="btn btn-info btn-sm"
+                                onClick={() => handleAction(req.id, "received")}
+                              >
+                                ✅ Received
+                              </button>
+                            ) : req.status.toLowerCase() === "approved" ? (
+                              <span className="text-primary fw-bold">
+                                Approved
+                              </span>
+                            ) : (
+                              <span className="text-success fw-bold">
+                                Returned
+                              </span>
+                            )}
+                          </>
+                        )}
                       </td>
                     )}
-                    {activeTab === "return" && (
-                      <td>
-                        {req.status.toLowerCase() === "return_requested" ? (
-                          <button
-                            className="btn btn-info btn-sm"
-                            onClick={() => handleAction(req.id, "received")}
-                          >
-                            ✅ Received
-                          </button>
-                        ) : (
-                          <span className="text-success fw-bold">Returned</span>
-                        )}
+                    {activeTab === "due" && (
+                      <td
+                        className={
+                          isOverdue(req.returnDate) ? "text-danger fw-bold" : ""
+                        }
+                      >
+                        {req.returnDate
+                          ? new Date(req.returnDate).toLocaleDateString()
+                          : "—"}
                       </td>
                     )}
                   </tr>
