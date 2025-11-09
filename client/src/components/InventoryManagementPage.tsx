@@ -42,7 +42,7 @@ const InventoryManagementPage = () => {
       const res = await fetch("http://localhost:9086/api/equipments", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data: Equipment[] = await res.json();
       setEquipmentList(data);
     } catch (err) {
       console.error(err);
@@ -181,13 +181,110 @@ const InventoryManagementPage = () => {
     }
   };
 
+  const renderForm = (isUpdate = false) => (
+    <div className="card p-4 shadow-sm mb-4">
+      <div className="row g-3">
+        <div className="col-md-6">
+          <label className="form-label">Equipment Name</label>
+          <input
+            className="form-control"
+            placeholder="Name"
+            name="name"
+            value={form.name || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-6">
+          <label className="form-label">Category</label>
+          <select
+            className="form-select"
+            name="category"
+            value={form.category || "OTHER"}
+            onChange={handleChange}
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-6">
+          <label className="form-label">Description</label>
+          <textarea
+            className="form-control"
+            placeholder="Description"
+            name="description"
+            value={form.description || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-3">
+          <label className="form-label text-primary">Total Quantity</label>
+          <input
+            className="form-control"
+            type="number"
+            placeholder="Total Quantity"
+            name="totalQuantity"
+            value={form.totalQuantity || 0}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-3">
+          <label className="form-label text-success">Available Quantity</label>
+          <input
+            className="form-control"
+            type="number"
+            placeholder="Available Quantity"
+            name="availableQuantity"
+            value={form.availableQuantity || 0}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-3">
+          <label className="form-label">Condition</label>
+          <select
+            className="form-select"
+            name="condition"
+            value={form.condition || "GOOD"}
+            onChange={handleChange}
+          >
+            {conditions.map((cond) => (
+              <option key={cond} value={cond}>
+                {cond}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-6">
+          <label className="form-label">Image URL (optional)</label>
+          <input
+            className="form-control"
+            placeholder="Image URL"
+            name="imageUrl"
+            value={form.imageUrl || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-12">
+          <button
+            className={`btn ${isUpdate ? "btn-warning" : "btn-success"}`}
+            onClick={isUpdate ? handleUpdate : handleAdd}
+          >
+            {isUpdate ? "Update Equipment" : "Add Equipment"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <NavBar />
       <div className="container mt-4">
-        <h2 className="mb-4">Inventory Management</h2>
+        <h2 className="mb-4 text-center">Inventory Management</h2>
 
-        <ul className="nav nav-tabs mb-3">
+        <ul className="nav nav-tabs mb-4 justify-content-center">
           <li className="nav-item">
             <button
               className={`nav-link ${activeTab === "add" ? "active" : ""}`}
@@ -214,211 +311,44 @@ const InventoryManagementPage = () => {
           </li>
         </ul>
 
-        {activeTab === "add" && (
-          <div>
-            <h5>Add New Equipment</h5>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <input
-                  className="form-control"
-                  placeholder="Name"
-                  name="name"
-                  value={form.name || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-6">
-                <select
-                  className="form-select"
-                  name="category"
-                  value={form.category || "OTHER"}
-                  onChange={handleChange}
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-6">
-                <textarea
-                  className="form-control"
-                  placeholder="Description"
-                  name="description"
-                  value={form.description || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-3">
-                <input
-                  className="form-control"
-                  type="number"
-                  placeholder="Total Quantity"
-                  name="totalQuantity"
-                  value={form.totalQuantity || 0}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-3">
-                <input
-                  className="form-control"
-                  type="number"
-                  placeholder="Available Quantity"
-                  name="availableQuantity"
-                  value={form.availableQuantity || 0}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-3">
-                <select
-                  className="form-select"
-                  name="condition"
-                  value={form.condition || "GOOD"}
-                  onChange={handleChange}
-                >
-                  {conditions.map((cond) => (
-                    <option key={cond} value={cond}>
-                      {cond}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-6">
-                <input
-                  className="form-control"
-                  placeholder="Image URL (optional)"
-                  name="imageUrl"
-                  value={form.imageUrl || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-12">
-                <button className="btn btn-success" onClick={handleAdd}>
-                  Add Equipment
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab === "add" && renderForm(false)}
 
         {activeTab === "update" && (
-          <div>
-            <h5>Update Equipment</h5>
-            <select
-              className="form-select mb-3"
-              value={updateId}
-              onChange={(e) => handleSelectUpdate(e.target.value)}
-            >
-              <option value="">Select Equipment</option>
-              {equipmentList.map((eq) => (
-                <option key={eq.equipmentId} value={eq.equipmentId}>
-                  {eq.name}
-                </option>
-              ))}
-            </select>
-            {updateId && (
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <input
-                    className="form-control"
-                    placeholder="Name"
-                    name="name"
-                    value={form.name || ""}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <select
-                    className="form-select"
-                    name="category"
-                    value={form.category || "OTHER"}
-                    onChange={handleChange}
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-md-6">
-                  <textarea
-                    className="form-control"
-                    placeholder="Description"
-                    name="description"
-                    value={form.description || ""}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <input
-                    className="form-control"
-                    type="number"
-                    placeholder="Total Quantity"
-                    name="totalQuantity"
-                    value={form.totalQuantity || 0}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <input
-                    className="form-control"
-                    type="number"
-                    placeholder="Available Quantity"
-                    name="availableQuantity"
-                    value={form.availableQuantity || 0}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <select
-                    className="form-select"
-                    name="condition"
-                    value={form.condition || "GOOD"}
-                    onChange={handleChange}
-                  >
-                    {conditions.map((cond) => (
-                      <option key={cond} value={cond}>
-                        {cond}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-md-6">
-                  <input
-                    className="form-control"
-                    placeholder="Image URL (optional)"
-                    name="imageUrl"
-                    value={form.imageUrl || ""}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="col-12">
-                  <button className="btn btn-warning" onClick={handleUpdate}>
-                    Update Equipment
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <>
+            <div className="mb-3">
+              <select
+                className="form-select"
+                value={updateId}
+                onChange={(e) => handleSelectUpdate(e.target.value)}
+              >
+                <option value="">Select Equipment to Update</option>
+                {equipmentList.map((eq) => (
+                  <option key={eq.equipmentId} value={eq.equipmentId}>
+                    {eq.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {updateId && renderForm(true)}
+          </>
         )}
 
         {activeTab === "delete" && (
-          <div>
-            <h5>Delete Equipment</h5>
-            <select
-              className="form-select mb-3"
-              value={deleteId}
-              onChange={(e) => setDeleteId(e.target.value)}
-            >
-              <option value="">Select Equipment</option>
-              {equipmentList.map((eq) => (
-                <option key={eq.equipmentId} value={eq.equipmentId}>
-                  {eq.name}
-                </option>
-              ))}
-            </select>
+          <div className="card p-4 shadow-sm mb-4">
+            <div className="mb-3">
+              <select
+                className="form-select"
+                value={deleteId}
+                onChange={(e) => setDeleteId(e.target.value)}
+              >
+                <option value="">Select Equipment to Delete</option>
+                {equipmentList.map((eq) => (
+                  <option key={eq.equipmentId} value={eq.equipmentId}>
+                    {eq.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button className="btn btn-danger" onClick={handleDelete}>
               Delete Equipment
             </button>
