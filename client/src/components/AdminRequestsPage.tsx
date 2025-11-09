@@ -68,7 +68,6 @@ function AdminRequestsPage() {
 
       if (!response.ok) throw new Error(`Failed to ${action} request`);
 
-
       setRequests((prev) =>
         prev.map((req) =>
           req.id === id
@@ -108,7 +107,6 @@ function AdminRequestsPage() {
         <div className="container text-center mt-5 text-danger">{error}</div>
       </>
     );
-
 
   let filteredRequests: CartRequest[] = [];
   if (activeTab === "pending") {
