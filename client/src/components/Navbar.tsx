@@ -8,11 +8,8 @@ function NavBar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Remove JWT token
     localStorage.removeItem("jwtToken");
-    // Clear cart if needed
     clearCart();
-    // Redirect to login page
     navigate("/login");
   };
 
@@ -35,19 +32,19 @@ function NavBar() {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link to="/dashboard" className="nav-link active">
+              <Link to="/dashboard" className="nav-link">
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <Link to="/requests" className="nav-link">
                 Requests
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <Link to="/orders" className="nav-link">
                 Orders
-              </a>
+              </Link>
             </li>
           </ul>
 
@@ -78,14 +75,14 @@ function NavBar() {
                 aria-labelledby="userDropdown"
               >
                 <li>
-                  <a className="dropdown-item" href="#">
+                  <Link className="dropdown-item" to="/profile">
                     Profile
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a className="dropdown-item" href="#">
+                  <Link className="dropdown-item" to="/settings">
                     Settings
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <hr className="dropdown-divider" />

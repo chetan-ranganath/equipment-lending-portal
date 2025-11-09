@@ -8,11 +8,14 @@ function CartPage() {
   const [quantities, setQuantities] = useState(
     Object.fromEntries(cart.map((item) => [item.equipmentId, item.quantity]))
   );
+  const [purpose, setPurpose] = useState("");
+  const [returnDate, setReturnDate] = useState(""); // 📅 new
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false); // ✅ modal state
 
   const handleQuantityChange = (id: string, value: number, max: number) => {
     if (value < 1) value = 1;
     if (value > max) value = max;
-
     setQuantities((prev) => ({ ...prev, [id]: value }));
   };
 
@@ -20,6 +23,81 @@ function CartPage() {
     (sum, q) => sum + (Number(q) || 0),
     0
   );
+
+  const handleSubmit = async () => {
+    if (!purpose.trim()) {
+      alert("Please enter a purpose before submitting your request.");
+      return;
+    }
+
+    if (!returnDate) {
+      alert("Please select a return date.");
+      return;
+    }
+
+    const token = localStorage.getItem("jwtToken");
+    const username = localStorage.getItem("username");
+
+    if (!token || !username) {
+      alert("You must be logged in to submit a request.");
+      return;
+    }
+
+    const payload = {
+      username,
+      status: "PENDING",
+      purpose,
+      requestedAt: new Date().toISOString(),
+      returnDate, // 📅 include selected date
+      items: cart.map((item) => ({
+        equipment: {
+          equipmentId: item.equipmentId,
+          name: item.name,
+          category: item.category,
+          description: item.description,
+          totalQuantity: item.totalQuantity,
+          availableQuantity: item.availableQuantity,
+          condition: item.condition,
+          imageUrl: item.imageUrl,
+          available: item.available,
+        },
+        requestedQuantity: quantities[item.equipmentId],
+      })),
+    };
+
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:9086/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Server error ${response.status}: ${text}`);
+      }
+
+      // ✅ show modal instead of alert
+      setShowModal(true);
+      clearCart();
+      setPurpose("");
+      setReturnDate("");
+    } catch (err: any) {
+      console.error("Error submitting request:", err);
+      alert("Failed to submit request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    window.location.href = "/dashboard"; // redirect after modal close
+  };
 
   return (
     <>
@@ -103,6 +181,32 @@ function CartPage() {
             <div className="card shadow-sm border-0 mt-4">
               <div className="card-body text-center">
                 <h5 className="fw-bold mb-3">Request Summary</h5>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Purpose of Request
+                  </label>
+                  <textarea
+                    className="form-control"
+                    rows={2}
+                    placeholder="Enter purpose for requesting equipment..."
+                    value={purpose}
+                    onChange={(e) => setPurpose(e.target.value)}
+                  />
+                </div>
+
+                {/* 📅 Return Date Picker */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Return Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={returnDate}
+                    onChange={(e) => setReturnDate(e.target.value)}
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+
                 <p className="mb-2">
                   Total distinct items: <strong>{cart.length}</strong>
                 </p>
@@ -110,15 +214,21 @@ function CartPage() {
                   Total quantity requested:{" "}
                   <strong className="text-primary">{totalItems}</strong>
                 </p>
+
                 <div className="d-flex justify-content-center gap-3 mt-3">
                   <button
                     className="btn btn-outline-secondary"
                     onClick={clearCart}
+                    disabled={loading}
                   >
                     Clear Cart
                   </button>
-                  <button className="btn btn-success px-4">
-                    ✅ Submit Request
+                  <button
+                    className="btn btn-success px-4"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                  >
+                    {loading ? "Submitting..." : "Submit Request"}
                   </button>
                 </div>
               </div>
@@ -126,6 +236,38 @@ function CartPage() {
           </>
         )}
       </div>
+
+      {/* ✅ Success Modal */}
+      {showModal && (
+        <div
+          className="modal fade show"
+          style={{
+            display: "block",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content shadow">
+              <div className="modal-header border-0">
+                <h5 className="modal-title text-success fw-bold">
+                  ✅ Request Submitted
+                </h5>
+              </div>
+              <div className="modal-body text-center">
+                <p>Your equipment request has been submitted successfully!</p>
+                <p className="text-muted mb-0">
+                  You’ll be redirected to your dashboard shortly.
+                </p>
+              </div>
+              <div className="modal-footer border-0 d-flex justify-content-center">
+                <button className="btn btn-success" onClick={handleModalClose}>
+                  Go to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
