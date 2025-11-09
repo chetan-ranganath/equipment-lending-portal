@@ -133,4 +133,31 @@ public class CartRequestController {
             return handleResponse.onError("500", "Failed to deny cart request");
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PutMapping("/{id}/request-return")
+    public ResponseEntity<?> requestReturnCartRequest(@PathVariable String id) {
+        try {
+            log.info("Marking cart request {} as RETURN_REQUESTED", id);
+            CartRequest updated = cartRequestService.updateCartRequestStatus(id, "RETURN_REQUESTED");
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            log.error("Error marking cart request {} as return requested: {}", id, e.getMessage());
+            return handleResponse.onError("500", "Failed to mark cart request for return");
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PutMapping("/{id}/return")
+    public ResponseEntity<?> returnCartRequest(@PathVariable String id) {
+        try {
+            log.info("Marking cart request {} as RETURN_REQUESTED", id);
+            CartRequest updated = cartRequestService.updateCartRequestStatus(id, "RETURNED");
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            log.error("Error marking cart request {} as return requested: {}", id, e.getMessage());
+            return handleResponse.onError("500", "Failed to mark cart request for return");
+        }
+    }
+
 }

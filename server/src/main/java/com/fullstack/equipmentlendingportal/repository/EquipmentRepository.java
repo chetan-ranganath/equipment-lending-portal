@@ -17,5 +17,6 @@ public interface EquipmentRepository {
 
     List<Equipment> findByCategoryAndAvailability(EquipmentCategory category, boolean available);
 
+    Equipment updateEquipmentQuantity(String equipmentId, int newAvailableQuantity);
 
 }

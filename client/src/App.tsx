@@ -4,7 +4,8 @@ import RegisterForm from "./components/Register.tsx";
 import Dashboard from "./components/Dashboard.tsx";
 import CartPage from "./components/Cartpage.tsx";
 import RequestsPage from "./components/RequestPage.tsx";
-import AdminRequestsPage from "./components/AdminRequestsPage.tsx"; // ✅ new
+import AdminRequestsPage from "./components/AdminRequestsPage.tsx";
+import ReturnEquipmentPage from "./components/ReturnEquipmentPage.tsx";
 import { CartProvider } from "./components/CartContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
@@ -27,11 +28,14 @@ function App() {
                   <Route path="cart" element={<CartPage />} />
                   <Route path="requests" element={<RequestsPage />} />
 
-                  {/* ✅ Only for admin */}
+                  {/* ✅ Admin-only */}
                   <Route
                     path="admin/requests"
                     element={<AdminRequestsPage />}
                   />
+
+                  {/* ✅ Return Equipment for all users */}
+                  <Route path="return" element={<ReturnEquipmentPage />} />
                 </Routes>
               </CartProvider>
             </ProtectedRoute>

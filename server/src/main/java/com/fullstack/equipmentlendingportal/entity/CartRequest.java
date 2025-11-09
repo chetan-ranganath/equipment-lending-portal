@@ -19,6 +19,7 @@ public class CartRequest {
     private String status;
     private String purpose;
     private LocalDateTime requestedAt;
+    private String returnDate;
     private List<CartRequestItem> items;
 }
 

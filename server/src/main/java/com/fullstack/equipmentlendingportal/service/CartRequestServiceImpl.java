@@ -30,9 +30,12 @@ public class CartRequestServiceImpl implements CartRequestService {
             if (equipment == null) {
                 throw new IllegalArgumentException("Invalid equipment ID: " + item.getEquipment().getEquipmentId());
             }
+            int availableQuantity = equipment.getAvailableQuantity();
             if (item.getRequestedQuantity() > equipment.getAvailableQuantity()) {
                 throw new IllegalArgumentException("Requested quantity exceeds available stock for " + equipment.getName());
             }
+            equipmentRepository.updateEquipmentQuantity(equipment.getEquipmentId(),availableQuantity - item.getRequestedQuantity());
+
         }
 
         cartRequest.setStatus("PENDING");
@@ -95,19 +98,49 @@ public class CartRequestServiceImpl implements CartRequestService {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Request ID cannot be null or empty.");
         }
-        if (!("APPROVED".equalsIgnoreCase(status) || "DENIED".equalsIgnoreCase(status))) {
-            throw new IllegalArgumentException("Invalid status: " + status + ". Must be APPROVED or DENIED.");
+
+        // Allow APPROVED, DENIED, RETURN_REQUESTED
+        if (!("APPROVED".equalsIgnoreCase(status) ||
+                "DENIED".equalsIgnoreCase(status) ||
+                "RETURNED".equalsIgnoreCase(status) ||
+                "RETURN_REQUESTED".equalsIgnoreCase(status))) {
+            throw new IllegalArgumentException(
+                    "Invalid status: " + status + ". Must be APPROVED, DENIED or RETURN_REQUESTED or RETURNED."
+            );
         }
 
         CartRequest request = cartRequestRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cart request not found for id: " + id));
 
-        if (!"PENDING".equalsIgnoreCase(request.getStatus())) {
-            throw new IllegalStateException("Only PENDING requests can be approved or denied.");
+        // Only allow PENDING requests to be APPROVED or DENIED
+        if ("APPROVED".equalsIgnoreCase(status) || "DENIED".equalsIgnoreCase(status)) {
+            if (!"PENDING".equalsIgnoreCase(request.getStatus())) {
+                throw new IllegalStateException(
+                        "Only PENDING requests can be approved or denied. Current status: " + request.getStatus()
+                );
+            }
+        }
+
+        // Restore equipment quantity only on DENIED or RETURN_REQUESTED
+        if ("DENIED".equalsIgnoreCase(status) || "RETURNED".equalsIgnoreCase(status)) {
+            for (CartRequestItem item : request.getItems()) {
+                Equipment equipment = equipmentRepository.findEquipmentById(item.getEquipment().getEquipmentId());
+                if (equipment == null) {
+                    log.warn("Equipment not found for request item: {}", item.getEquipment().getEquipmentId());
+                    continue;
+                }
+
+                int restoredQuantity = equipment.getAvailableQuantity() + item.getRequestedQuantity();
+                equipmentRepository.updateEquipmentQuantity(equipment.getEquipmentId(), restoredQuantity);
+
+                log.info("Restored {} units of '{}' (Equipment ID: {}) after {} action",
+                        item.getRequestedQuantity(), equipment.getName(), equipment.getEquipmentId(), status.toUpperCase());
+            }
         }
 
         request.setStatus(status.toUpperCase());
         return cartRequestRepository.save(request);
     }
+
 
 }

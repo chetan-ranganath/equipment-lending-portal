@@ -15,9 +15,10 @@ interface CartRequestItem {
 interface CartRequest {
   id: string;
   username: string;
-  status: string;
+  status: string; // PENDING, APPROVED, DENIED, RETURN_REQUESTED, RETURNED
   purpose: string;
   requestedAt: string;
+  returnDate?: string;
   items: CartRequestItem[];
 }
 
@@ -25,9 +26,9 @@ function AdminRequestsPage() {
   const [requests, setRequests] = useState<CartRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"pending" | "approved" | "denied">(
-    "pending"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "pending" | "approved" | "denied" | "return"
+  >("pending");
 
   const token = localStorage.getItem("jwtToken");
 
@@ -35,9 +36,7 @@ function AdminRequestsPage() {
     try {
       setLoading(true);
       const response = await fetch("http://localhost:9086/api/requests", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error("Failed to fetch requests");
@@ -52,19 +51,35 @@ function AdminRequestsPage() {
     }
   };
 
-  const handleAction = async (id: string, action: "approve" | "deny") => {
+  const handleAction = async (
+    id: string,
+    action: "approve" | "deny" | "received"
+  ) => {
     try {
-      const response = await fetch(
-        `http://localhost:9086/api/requests/${id}/${action}`,
-        {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const endpoint =
+        action === "received"
+          ? `/api/requests/${id}/return`
+          : `/api/requests/${id}/${action}`;
+
+      const response = await fetch(`http://localhost:9086${endpoint}`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!response.ok) throw new Error(`Failed to ${action} request`);
 
-      await fetchRequests(); // Refresh list
+      // Update local state without refetching everything
+      setRequests((prev) =>
+        prev.map((req) =>
+          req.id === id
+            ? {
+                ...req,
+                status:
+                  action === "received" ? "RETURNED" : action.toUpperCase(),
+              }
+            : req
+        )
+      );
     } catch (err) {
       console.error(err);
       alert(`Failed to ${action} request.`);
@@ -75,7 +90,7 @@ function AdminRequestsPage() {
     fetchRequests();
   }, []);
 
-  if (loading) {
+  if (loading)
     return (
       <>
         <NavBar />
@@ -85,20 +100,47 @@ function AdminRequestsPage() {
         </div>
       </>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <>
         <NavBar />
         <div className="container text-center mt-5 text-danger">{error}</div>
       </>
     );
-  }
 
-  const filteredRequests = requests.filter(
-    (req) => req.status?.toLowerCase() === activeTab
-  );
+  // Filter requests based on active tab
+  let filteredRequests: CartRequest[] = [];
+  if (activeTab === "pending") {
+    filteredRequests = requests.filter(
+      (r) => r.status?.toLowerCase() === "pending"
+    );
+  } else if (activeTab === "approved") {
+    filteredRequests = requests.filter(
+      (r) => r.status?.toLowerCase() === "approved"
+    );
+  } else if (activeTab === "denied") {
+    filteredRequests = requests.filter(
+      (r) => r.status?.toLowerCase() === "denied"
+    );
+  } else if (activeTab === "return") {
+    filteredRequests = requests
+      .filter(
+        (r) =>
+          r.status?.toLowerCase() === "return_requested" ||
+          r.status?.toLowerCase() === "returned"
+      )
+      .sort((a, b) => {
+        const statusOrder: { [key: string]: number } = {
+          return_requested: 0,
+          returned: 1,
+        };
+        return (
+          (statusOrder[a.status.toLowerCase()] ?? 99) -
+          (statusOrder[b.status.toLowerCase()] ?? 99)
+        );
+      });
+  }
 
   const statusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -106,6 +148,12 @@ function AdminRequestsPage() {
         return <span className="badge bg-success">Approved</span>;
       case "denied":
         return <span className="badge bg-danger">Denied</span>;
+      case "return_requested":
+        return (
+          <span className="badge bg-warning text-dark">Return Pending</span>
+        );
+      case "returned":
+        return <span className="badge bg-info text-dark">Returned</span>;
       default:
         return <span className="badge bg-warning text-dark">Pending</span>;
     }
@@ -145,6 +193,14 @@ function AdminRequestsPage() {
               Denied
             </button>
           </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "return" ? "active" : ""}`}
+              onClick={() => setActiveTab("return")}
+            >
+              Return Requests
+            </button>
+          </li>
         </ul>
 
         {filteredRequests.length === 0 ? (
@@ -170,6 +226,7 @@ function AdminRequestsPage() {
                   <th>Status</th>
                   <th>Items</th>
                   {activeTab === "pending" && <th>Actions</th>}
+                  {activeTab === "return" && <th>Return</th>}
                 </tr>
               </thead>
               <tbody>
@@ -203,6 +260,20 @@ function AdminRequestsPage() {
                         >
                           ❌ Deny
                         </button>
+                      </td>
+                    )}
+                    {activeTab === "return" && (
+                      <td>
+                        {req.status.toLowerCase() === "return_requested" ? (
+                          <button
+                            className="btn btn-info btn-sm"
+                            onClick={() => handleAction(req.id, "received")}
+                          >
+                            ✅ Received
+                          </button>
+                        ) : (
+                          <span className="text-success fw-bold">Returned</span>
+                        )}
                       </td>
                     )}
                   </tr>

@@ -55,6 +55,12 @@ function NavBar() {
               </Link>
             </li>
 
+            <li className="nav-item">
+              <Link to="/return" className="nav-link text-info">
+                Return Equipment
+              </Link>
+            </li>
+
             {/* Show only for admins */}
             {role && role.toLowerCase() === "admin" && (
               <li className="nav-item">

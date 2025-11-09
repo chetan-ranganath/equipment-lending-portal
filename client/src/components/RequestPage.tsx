@@ -38,7 +38,6 @@ export default function RequestsPage() {
       const token = localStorage.getItem("jwtToken");
 
       if (!username || !token) {
-        alert("You must be logged in to view your requests.");
         setLoading(false);
         return;
       }
@@ -53,13 +52,16 @@ export default function RequestsPage() {
           }
         );
 
-        if (!response.ok) throw new Error(`Error ${response.status}`);
-
-        const data = await response.json();
-        setRequests(data);
+        if (response.ok) {
+          const data = await response.json();
+          setRequests(data);
+        } else {
+          // Non-200 → treat as empty gracefully (no alerts)
+          setRequests([]);
+        }
       } catch (err) {
         console.error("Failed to fetch requests:", err);
-        alert("Failed to load your requests.");
+        setRequests([]); // fallback to empty state
       } finally {
         setLoading(false);
       }

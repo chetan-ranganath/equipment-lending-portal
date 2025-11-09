@@ -24,6 +24,25 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
 
   const isAvailable = equipment.available && equipment.availableQuantity > 0;
 
+  // Default images by category
+  const defaultImages: Record<string, string> = {
+    SPORTS: "https://cdn-icons-png.flaticon.com/512/833/833314.png",
+    LAB: "https://cdn-icons-png.flaticon.com/512/3063/3063490.png",
+    MUSIC: "https://cdn-icons-png.flaticon.com/512/727/727218.png",
+    CAMERA: "https://cdn-icons-png.flaticon.com/512/2920/2920264.png",
+    ELECTRONICS: "https://cdn-icons-png.flaticon.com/512/2910/2910768.png",
+    OTHER: "https://cdn-icons-png.flaticon.com/512/565/565547.png",
+  };
+
+  // Determine the image to use
+  const getImageUrl = () => {
+    if (equipment.imageUrl && equipment.imageUrl.trim() !== "") {
+      return equipment.imageUrl;
+    }
+    const category = equipment.category?.toUpperCase() || "OTHER";
+    return defaultImages[category] || defaultImages["OTHER"];
+  };
+
   const handleAdd = () => {
     if (quantity > 0 && quantity <= equipment.availableQuantity) {
       for (let i = 0; i < quantity; i++) {
@@ -57,13 +76,20 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
       }}
     >
       <img
-        src={equipment.imageUrl}
+        src={getImageUrl()}
         className="card-img-top"
         alt={equipment.name}
+        // fallback if image is broken
+        onError={(e) => {
+          const category = equipment.category?.toUpperCase() || "OTHER";
+          (e.target as HTMLImageElement).src =
+            defaultImages[category] || defaultImages["OTHER"];
+        }}
         style={{
           height: "200px",
           objectFit: "cover",
           borderBottom: "1px solid #eee",
+          backgroundColor: "#f8f9fa",
         }}
       />
 
@@ -112,7 +138,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ equipment }) => {
             </button>
           </div>
 
-          {/* Availability info (integrated look) */}
+          {/* Availability info */}
           <small
             className="text-muted d-block mb-3"
             style={{ fontSize: "0.85rem" }}
