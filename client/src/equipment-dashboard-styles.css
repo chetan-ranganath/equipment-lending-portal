@@ -1,0 +1,228 @@
+/* Equipment Dashboard Scoped Styles */
+.equipment-dashboard-app {
+	--equipment-bg: #fffaf6;
+	--equipment-surface: #ffffff;
+	--equipment-elevated: #fffdfb;
+	--equipment-text: #2b2b2b;
+	--equipment-muted: #6b7280;
+	--equipment-primary: #ff8a5b;      /* warm coral */
+	--equipment-primary-600: #ff7640;
+	--equipment-accent: #7cc4b2;       /* soft teal accent */
+	--equipment-success: #22c55e;
+	--equipment-warning: #f59e0b;
+	--equipment-danger: #ef4444;
+	--equipment-danger-600: #dc2626;
+	--equipment-border: #f0e6df;
+	--equipment-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+	
+	box-sizing: border-box;
+	margin: 0;
+	background:
+		radial-gradient(900px 500px at 15% 0%, #fff1e7 0%, rgba(255,241,231,0.0) 60%),
+		radial-gradient(900px 500px at 85% -10%, #fff7ec 0%, rgba(255,247,236,0.0) 60%),
+		var(--equipment-bg);
+	color: var(--equipment-text);
+	font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
+	min-height: 100vh;
+}
+
+.equipment-dashboard-app *,
+.equipment-dashboard-app *::before,
+.equipment-dashboard-app *::after {
+	box-sizing: border-box;
+}
+
+.equipment-dashboard-app .container {
+	max-width: 1100px;
+	margin: 32px auto;
+	padding: 0 16px;
+}
+
+.equipment-dashboard-app h1 { margin: 0 0 18px; font-size: 28px; letter-spacing: 0.2px; }
+.equipment-dashboard-app h2 { margin: 0 0 12px; font-size: 20px; color: #373737; }
+
+/* Cards */
+.equipment-dashboard-app .card {
+	background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.95));
+	border: 1px solid var(--equipment-border);
+	border-radius: 16px;
+	box-shadow: var(--equipment-shadow);
+	overflow: hidden;
+}
+.equipment-dashboard-app .card-section {
+	padding: 18px;
+	border-top: 1px solid var(--equipment-border);
+	background: var(--equipment-surface);
+}
+.equipment-dashboard-app .card-section:first-child { border-top: none; }
+
+/* Forms */
+.equipment-dashboard-app .form .grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px 18px;
+	align-items: start;
+}
+@media (max-width: 720px) {
+	.equipment-dashboard-app .form .grid { grid-template-columns: 1fr; }
+}
+
+.equipment-dashboard-app label { display: flex; flex-direction: column; gap: 6px; }
+.equipment-dashboard-app label.row { flex-direction: row; align-items: center; gap: 10px; }
+
+.equipment-dashboard-app .input, 
+.equipment-dashboard-app select.input, 
+.equipment-dashboard-app textarea.input {
+	background: var(--equipment-elevated);
+	border: 1px solid var(--equipment-border);
+	color: var(--equipment-text);
+	padding: 10px 12px;
+	border-radius: 12px;
+	outline: none;
+	transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.equipment-dashboard-app textarea.input { resize: vertical; }
+.equipment-dashboard-app .input:focus, 
+.equipment-dashboard-app select.input:focus, 
+.equipment-dashboard-app textarea.input:focus {
+	border-color: var(--equipment-primary);
+	box-shadow: 0 0 0 3px rgba(255,138,91,0.18);
+	background: #fff;
+}
+
+.equipment-dashboard-app .error {
+	color: #dc2626;
+	font-size: 12px;
+}
+
+/* Buttons */
+.equipment-dashboard-app .btn {
+	background: #fff;
+	color: var(--equipment-text);
+	border: 1px solid var(--equipment-border);
+	padding: 9px 14px;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: transform .05s ease, background .15s ease, border-color .15s ease;
+}
+.equipment-dashboard-app .btn:hover { background: #fff7f3; }
+.equipment-dashboard-app .btn:active { transform: translateY(1px); }
+
+.equipment-dashboard-app .btn.primary {
+	background: var(--equipment-primary);
+	border-color: var(--equipment-primary-600);
+	color: #fff;
+}
+.equipment-dashboard-app .btn.primary:hover { background: var(--equipment-primary-600); }
+
+.equipment-dashboard-app .btn.ghost {
+	background: transparent;
+}
+.equipment-dashboard-app .btn.danger {
+	background: var(--equipment-danger);
+	border-color: var(--equipment-danger-600);
+	color: #fff;
+}
+.equipment-dashboard-app .btn.danger:hover { background: var(--equipment-danger-600); }
+
+/* Lists / Tables */
+.equipment-dashboard-app .list-header {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+.equipment-dashboard-app .list-header .input { width: 360px; max-width: 100%; }
+
+.equipment-dashboard-app .table-wrapper {
+	overflow: auto;
+	border-radius: 12px;
+	border: 1px solid var(--equipment-border);
+	background: #fff;
+}
+.equipment-dashboard-app .table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.equipment-dashboard-app .table th, 
+.equipment-dashboard-app .table td {
+	padding: 11px 12px;
+	border-bottom: 1px solid var(--equipment-border);
+}
+.equipment-dashboard-app .table thead th {
+	text-align: left;
+	color: var(--equipment-muted);
+	background: #fff8f4;
+	position: sticky;
+	top: 0;
+}
+.equipment-dashboard-app .table .num { text-align: right; width: 100px; }
+.equipment-dashboard-app .table .empty {
+	text-align: center;
+	color: var(--equipment-muted);
+	padding: 22px;
+}
+
+/* Badges (subtle status chips) */
+.equipment-dashboard-app .badge {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 999px;
+	border: 1px solid var(--equipment-border);
+	background: #fff;
+	color: var(--equipment-muted);
+	font-size: 12px;
+}
+.equipment-dashboard-app .badge.success { background: #eafff5; color: #0f8a4b; border-color: #b6f7d2; }
+.equipment-dashboard-app .badge.warning { background: #fff7e6; color: #b45309; border-color: #fde8c3; }
+
+/* Actions column */
+.equipment-dashboard-app .actions-col { width: 280px; }
+
+/* Centered feedback modal */
+.equipment-dashboard-app .overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0,0,0,0.15);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+.equipment-dashboard-app .overlay-card {
+	background: #ffffff;
+	border: 1px solid var(--equipment-border);
+	border-radius: 16px;
+	min-width: 300px;
+	max-width: 92vw;
+	padding: 22px 24px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	box-shadow: var(--equipment-shadow);
+}
+.equipment-dashboard-app .overlay-msg { font-size: 15px; color: var(--equipment-text); text-align: center; }
+
+/* Spinner */
+.equipment-dashboard-app .spinner {
+	width: 28px; height: 28px;
+	border: 3px solid rgba(0,0,0,0.08);
+	border-top-color: var(--equipment-primary);
+	border-radius: 50%;
+	animation: equipment-spin 0.85s linear infinite;
+}
+@keyframes equipment-spin { to { transform: rotate(360deg); } }
+
+/* Links inside buttons (for Router <Link> styled like buttons) */
+.equipment-dashboard-app a.btn { text-decoration: none; display: inline-block; }
+
+/* Small utilities */
+.equipment-dashboard-app .small-muted { color: var(--equipment-muted); font-size: 12px; }
+
+/* Optional: Soft focus ring on keyboard navigation */
+.equipment-dashboard-app :focus-visible {
+	outline: 3px solid rgba(255,138,91,0.35);
+	outline-offset: 2px;
+}
